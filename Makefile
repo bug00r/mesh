@@ -1,4 +1,4 @@
-MAKE?=mingw32-make
+#MAKE?=mingw32-make
 AR?=ar
 ARFLAGS?=rcs
 PATHSEP?=/
@@ -11,6 +11,8 @@ endif
 
 BUILDDIR?=$(BUILDROOT)$(PATHSEP)$(CC)
 BUILDPATH?=$(BUILDDIR)$(PATHSEP)
+
+INSTALL_ROOT?=$(BUILDPATH)
 
 ifeq ($(DEBUG),1)
 	export debug=-ggdb -Ddebug=1
@@ -33,15 +35,19 @@ ifeq ($(DEBUG),3)
 endif
 
 ifeq ($(OUTPUT),1)
-	export outimg=-Doutput=1
+	export outimg= -Doutput=1
 endif
 
 CFLAGS=-std=c11 -Wpedantic -pedantic-errors -Wall -Wextra -O1 $(debug)
 #-ggdb
 #-pg for profiling 
+
+LIB?=-L/c/dev/lib
+INCLUDE?=-I/c/dev/include -I.
+
 SRC=mesh.c mesh_builder.c mesh_tree.c
 
-INCLUDEDIR=-I./../math/vec -I./../math/mat -I./../math/utils -I./../color -I./../shape -I.
+INCLUDEDIR=$(INCLUDE) -I.
 
 LIBNAME=libmesh.a
 OBJS=$(BUILDPATH)mesh.o $(BUILDPATH)mesh_tree.o $(BUILDPATH)mesh_builder.o
@@ -49,12 +55,7 @@ OBJS=$(BUILDPATH)mesh.o $(BUILDPATH)mesh_tree.o $(BUILDPATH)mesh_builder.o
 TESTSRC=test_mesh.c
 TESTBIN=test_mesh.exe
 TESTLIB=-lmesh -lshape -lcolor -lutilsmath -lmat -lvec  
-TESTLIBDIR=-L$(BUILDDIR) \
-		   -L./../shape/$(BUILDDIR) \
-		   -L./../color/$(BUILDDIR) \
-		   -L./../math/utils/$(BUILDDIR) \
-		   -L./../math/mat/$(BUILDDIR) \
-		   -L./../math/vec/$(BUILDDIR) 
+TESTLIBDIR=-L$(BUILDDIR) $(LIB)
 
 all: mkbuilddir $(BUILDPATH)$(LIBNAME) $(BUILDPATH)$(TESTBIN) test
 
@@ -83,4 +84,12 @@ mkbuilddir:
 
 clean:
 	-rm -dr $(BUILDROOT)
+
+install:
+	mkdir -p $(INSTALL_ROOT)include
+	mkdir -p $(INSTALL_ROOT)lib
+	cp ./mesh.h $(INSTALL_ROOT)include/mesh.h
+	cp ./mesh_builder.h $(INSTALL_ROOT)include/mesh_builder.h
+	cp ./mesh_tree.h $(INSTALL_ROOT)include/mesh_tree.h
+	cp $(BUILDPATH)$(LIBNAME) $(INSTALL_ROOT)lib/$(LIBNAME)
 	
