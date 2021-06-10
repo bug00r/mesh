@@ -500,30 +500,30 @@ create_hmap_from_array(float *_array, uint32_t _rows, uint32_t _cols) {
 		size_t row_offset = cur_row * cols;
 		for (int32_t cur_col = cols; --cur_col;) {
 			float cur_val = array[row_offset + cur_col];
-			printf("r: %i c: %i = %f \n", cur_row, cur_col, cur_val);
+			//printf("r: %i c: %i = %f \n", cur_row, cur_col, cur_val);
 			
 			//lb
 			cur_val = array[cur_row * cols + ( cur_col-1 )];
 			vec3_set_values(&lb, cur_col - 1 - offset_x , cur_val, cur_row - offset_z );
-			printf("lb: r: %i c: %i = %f \n", cur_row, cur_col-1, cur_val);
+			//printf("lb: r: %i c: %i = %f \n", cur_row, cur_col-1, cur_val);
 			//rb
 			cur_val = array[cur_row * cols + cur_col];
 			vec3_set_values(&rb, cur_col - offset_x, cur_val, cur_row - offset_z);
-			printf("rb: r: %i c: %i = %f \n", cur_row, cur_col, cur_val);
+			//printf("rb: r: %i c: %i = %f \n", cur_row, cur_col, cur_val);
 			//lt
 			cur_val = array[(cur_row - 1) * cols + ( cur_col - 1 )];
 			vec3_set_values(&lt, cur_col - 1 - offset_x, cur_val, cur_row - 1 - offset_z);
-			printf("lt: r: %i c: %i = %f \n", cur_row-1, cur_col-1, cur_val);
+			//printf("lt: r: %i c: %i = %f \n", cur_row-1, cur_col-1, cur_val);
 			//rt
 			cur_val = array[(cur_row - 1) * cols + cur_col];
 			vec3_set_values(&rt, cur_col - offset_x, cur_val, cur_row - 1 - offset_z);
-			printf("rt: r: %i c: %i = %f \n", cur_row-1, cur_col, cur_val);
+			//printf("rt: r: %i c: %i = %f \n", cur_row-1, cur_col, cur_val);
 
 			map->shapes[cnt_shape++] = create_shape_triangle3(&lb, &rb, &lt);
 			map->shapes[cnt_shape++] = create_shape_triangle3(&lt, &rb, &rt);
 
 		}
 	}
-	printf("created %i shapes\n", cnt_shape);
+	//printf("created %i shapes\n", cnt_shape);
 	return map;
 }
