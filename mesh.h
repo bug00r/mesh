@@ -92,5 +92,5 @@ void mesh_create_bbox(mesh_t * mesh);
 	 */
 #endif
 void mesh_color_by_bbox(mesh_t * mesh);
-
+void mesh_color_by_bbox2(mesh_t * mesh);
 #endif

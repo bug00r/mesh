@@ -153,9 +153,9 @@ mesh_t * create_square_block(const vec3_t *center, const float width, const floa
 
 mesh_t * 
 create_raster(const float linelen){
-	int lines = 5;
+	int lines = 25;
 	const float linestep = 0.5f;
-	mesh_t * raster = alloc_mesh(22);
+	mesh_t * raster = alloc_mesh(102);
 	const cRGB_t linecolor = {.5f, 0.5f, 0.5f};
 	vec3_t startvec, endvec;
 	
@@ -480,4 +480,50 @@ createpath(const float radius, const int cntelements, const float height, const 
         ++curelement;
 	}
 	return path;
+}
+
+mesh_t * 
+create_hmap_from_array(float *_array, uint32_t _rows, uint32_t _cols) {
+	int32_t rows = (int32_t)(_rows);
+	int32_t cols = (int32_t)(_cols);
+	float *array = _array;
+	float cur_val = 0;
+	vec3_t lb,rb,lt,rt;
+
+	uint32_t cnt_shape = 0;
+	mesh_t * map = alloc_mesh(((rows-1)*(cols-1))*2);
+
+	float offset_x = cols*0.5;
+	float offset_z = rows*0.5;
+
+	for (int32_t cur_row = rows; --cur_row;) {
+		size_t row_offset = cur_row * cols;
+		for (int32_t cur_col = cols; --cur_col;) {
+			float cur_val = array[row_offset + cur_col];
+			printf("r: %i c: %i = %f \n", cur_row, cur_col, cur_val);
+			
+			//lb
+			cur_val = array[cur_row * cols + ( cur_col-1 )];
+			vec3_set_values(&lb, cur_col - 1 - offset_x , cur_val, cur_row - offset_z );
+			printf("lb: r: %i c: %i = %f \n", cur_row, cur_col-1, cur_val);
+			//rb
+			cur_val = array[cur_row * cols + cur_col];
+			vec3_set_values(&rb, cur_col - offset_x, cur_val, cur_row - offset_z);
+			printf("rb: r: %i c: %i = %f \n", cur_row, cur_col, cur_val);
+			//lt
+			cur_val = array[(cur_row - 1) * cols + ( cur_col - 1 )];
+			vec3_set_values(&lt, cur_col - 1 - offset_x, cur_val, cur_row - 1 - offset_z);
+			printf("lt: r: %i c: %i = %f \n", cur_row-1, cur_col-1, cur_val);
+			//rt
+			cur_val = array[(cur_row - 1) * cols + cur_col];
+			vec3_set_values(&rt, cur_col - offset_x, cur_val, cur_row - 1 - offset_z);
+			printf("rt: r: %i c: %i = %f \n", cur_row-1, cur_col, cur_val);
+
+			map->shapes[cnt_shape++] = create_shape_triangle3(&lb, &rb, &lt);
+			map->shapes[cnt_shape++] = create_shape_triangle3(&lt, &rb, &rt);
+
+		}
+	}
+	printf("created %i shapes\n", cnt_shape);
+	return map;
 }

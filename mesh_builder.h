@@ -8,6 +8,7 @@
 #define MESH_BUILDER_H
 
 #include <stdlib.h>
+#include <stdint.h>
 #include <complex.h>
 #include "utils_math.h"
 #include "mesh.h"
@@ -98,5 +99,11 @@ mesh_t * createcone(const float radius, const float height, const unsigned int l
 	//creates a path with various angle ranges.
 #endif
 mesh_t * createpath(const float radius, const int cntelements, const float height, const int longs, const float scaleend);
+
+#if 0
+	//create heighmap from array of floats
+#endif
+mesh_t * create_hmap_from_array(float *_array, uint32_t _rows, uint32_t _cols);
+
 
 #endif
