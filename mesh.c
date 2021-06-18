@@ -122,6 +122,17 @@ mesh_create_bbox(mesh_t * mesh){
 }
 
 void 
+mesh_set_color (mesh_t * _mesh, cRGB_t * _color){
+	cRGB_t * color = _color;
+	mesh_t * mesh = _mesh;
+	vertex_t * vertex;
+	for(unsigned int shape = 0; shape < mesh->cntShapes; ++shape){
+		shape_t * curshape = mesh->shapes[shape];
+		set_shape_color(curshape, color);
+	}
+}
+
+void 
 mesh_color_by_bbox(mesh_t * mesh){
 	vec3_t * bbox_min = &mesh->bbox.min;
 	vec3_t * bbox_max = &mesh->bbox.max;

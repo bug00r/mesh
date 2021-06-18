@@ -527,3 +527,29 @@ create_hmap_from_array(float *_array, uint32_t _rows, uint32_t _cols) {
 	//printf("created %i shapes\n", cnt_shape);
 	return map;
 }
+
+mesh_t * 
+create_center(){
+	mesh_t * center = alloc_mesh(3);
+	const cRGB_t col_x = {0.f, 0.f, 1.f};
+	const cRGB_t col_z = {1.f, 0.f, 0.f};
+	const cRGB_t col_y = {0.f, 1.f, 0.f};
+	vec3_t startvec, endvec;
+	
+	vec3_set_values(&startvec, -1.f, 0.f, 0.f);
+	vec3_set_values(&endvec, 1.f, 0.f, 0.f);
+	center->shapes[0] = create_shape_line3(&startvec, &endvec);
+	set_shape_color(center->shapes[0], &col_x);
+	
+	vec3_set_values(&startvec, 0.f, 0.f, -1.f);
+	vec3_set_values(&endvec, 0.f, 0.f, 1.f);
+	center->shapes[1] = create_shape_line3(&startvec, &endvec);
+	set_shape_color(center->shapes[1], &col_z);
+	
+	vec3_set_values(&startvec, 0.f, -1.f, 0.f);
+	vec3_set_values(&endvec, 0.f, 1.f, 0.f);
+	center->shapes[2] = create_shape_line3(&startvec, &endvec);
+	set_shape_color(center->shapes[2], &col_y);
+
+	return center;
+}

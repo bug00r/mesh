@@ -105,5 +105,6 @@ mesh_t * createpath(const float radius, const int cntelements, const float heigh
 #endif
 mesh_t * create_hmap_from_array(float *_array, uint32_t _rows, uint32_t _cols);
 
+mesh_t * create_center();
 
 #endif
