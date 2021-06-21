@@ -153,24 +153,24 @@ mesh_t * create_square_block(const vec3_t *center, const float width, const floa
 
 mesh_t * 
 create_raster(const float linelen){
-	int lines = 25;
+	int lines = 10;
 	const float linestep = 0.5f;
-	mesh_t * raster = alloc_mesh(102);
+	mesh_t * raster = alloc_mesh(42);
 	const cRGB_t linecolor = {.5f, 0.5f, 0.5f};
 	vec3_t startvec, endvec;
 	
 	int curshape = 0;
 	for(int x = -lines; x <= lines; ++x ) {
-		startvec = (vec3_t){ linestep*x , 0.0f, -linelen };
-		endvec = (vec3_t){ linestep*x , 0.0f, linelen };
+		startvec = (vec3_t){ linestep*x , 0.5f, -linelen };
+		endvec = (vec3_t){ linestep*x , 0.5f, linelen };
 		raster->shapes[curshape] = create_shape_line3(&startvec, &endvec);
 		set_shape_color(raster->shapes[curshape], &linecolor);
 		curshape++;
 	}
 	
 	for(int z = -lines; z <= lines; ++z ) {
-		startvec = (vec3_t){ -linelen  , 0.0f, linestep*z};
-		endvec = (vec3_t){ linelen , 0.0f,  linestep*z};
+		startvec = (vec3_t){ -linelen  , 0.5f, linestep*z};
+		endvec = (vec3_t){ linelen , 0.5f,  linestep*z};
 		raster->shapes[curshape] = create_shape_line3(&startvec, &endvec);
 		set_shape_color(raster->shapes[curshape], &linecolor);
 		curshape++;
@@ -536,18 +536,18 @@ create_center(){
 	const cRGB_t col_y = {0.f, 1.f, 0.f};
 	vec3_t startvec, endvec;
 	
-	vec3_set_values(&startvec, -1.f, 0.f, 0.f);
-	vec3_set_values(&endvec, 1.f, 0.f, 0.f);
+	vec3_set_values(&startvec, 1.f, 0.f, 0.f);
+	vec3_set_values(&endvec, -1.f, 0.f, 0.f);
 	center->shapes[0] = create_shape_line3(&startvec, &endvec);
 	set_shape_color(center->shapes[0], &col_x);
 	
-	vec3_set_values(&startvec, 0.f, 0.f, -1.f);
-	vec3_set_values(&endvec, 0.f, 0.f, 1.f);
+	vec3_set_values(&startvec, 0.f, 0.f, 1.f);
+	vec3_set_values(&endvec, 0.f, 0.f, -1.f);
 	center->shapes[1] = create_shape_line3(&startvec, &endvec);
 	set_shape_color(center->shapes[1], &col_z);
 	
-	vec3_set_values(&startvec, 0.f, -1.f, 0.f);
-	vec3_set_values(&endvec, 0.f, 1.f, 0.f);
+	vec3_set_values(&startvec, 0.f, 1.f, 0.f);
+	vec3_set_values(&endvec, 0.f, -1.f, 0.f);
 	center->shapes[2] = create_shape_line3(&startvec, &endvec);
 	set_shape_color(center->shapes[2], &col_y);
 
