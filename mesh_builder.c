@@ -161,16 +161,16 @@ create_raster(const float linelen){
 	
 	int curshape = 0;
 	for(int x = -lines; x <= lines; ++x ) {
-		startvec = (vec3_t){ linestep*x , 0.5f, -linelen };
-		endvec = (vec3_t){ linestep*x , 0.5f, linelen };
+		startvec = (vec3_t){ linestep*x , 0.f, -linelen };
+		endvec = (vec3_t){ linestep*x , 0.f, linelen };
 		raster->shapes[curshape] = create_shape_line3(&startvec, &endvec);
 		set_shape_color(raster->shapes[curshape], &linecolor);
 		curshape++;
 	}
 	
 	for(int z = -lines; z <= lines; ++z ) {
-		startvec = (vec3_t){ -linelen  , 0.5f, linestep*z};
-		endvec = (vec3_t){ linelen , 0.5f,  linestep*z};
+		startvec = (vec3_t){ -linelen  , 0.f, linestep*z};
+		endvec = (vec3_t){ linelen , 0.f,  linestep*z};
 		raster->shapes[curshape] = create_shape_line3(&startvec, &endvec);
 		set_shape_color(raster->shapes[curshape], &linecolor);
 		curshape++;
@@ -491,19 +491,22 @@ create_hmap_from_array(float *_array, uint32_t _rows, uint32_t _cols) {
 	vec3_t lb,rb,lt,rt;
 
 	uint32_t cnt_shape = 0;
-	mesh_t * map = alloc_mesh(((rows-1)*(cols-1))*2);
+	uint32_t cntMesh = ((rows-1)*(cols-1))*6;
 
+	mesh_t * map = alloc_mesh(cntMesh);
+
+	//offset for calculation around the center of 0/0/0
 	float offset_x = cols*0.5;
 	float offset_z = rows*0.5;
 
 	for (int32_t cur_row = rows; --cur_row;) {
 		size_t row_offset = cur_row * cols;
 		for (int32_t cur_col = cols; --cur_col;) {
-			float cur_val = array[row_offset + cur_col];
+			//float cur_val = array[row_offset + cur_col];
 			//printf("r: %i c: %i = %f \n", cur_row, cur_col, cur_val);
 			
 			//lb
-			cur_val = array[cur_row * cols + ( cur_col-1 )];
+			float cur_val = array[cur_row * cols + ( cur_col-1 )];
 			vec3_set_values(&lb, cur_col - 1 - offset_x , cur_val, cur_row - offset_z );
 			//printf("lb: r: %i c: %i = %f \n", cur_row, cur_col-1, cur_val);
 			//rb
@@ -519,6 +522,10 @@ create_hmap_from_array(float *_array, uint32_t _rows, uint32_t _cols) {
 			vec3_set_values(&rt, cur_col - offset_x, cur_val, cur_row - 1 - offset_z);
 			//printf("rt: r: %i c: %i = %f \n", cur_row-1, cur_col, cur_val);
 
+			map->shapes[cnt_shape++] = create_shape_line3(&lb, &rb);
+			map->shapes[cnt_shape++] = create_shape_line3(&lb, &lt);
+			map->shapes[cnt_shape++] = create_shape_line3(&lt, &rt);
+			map->shapes[cnt_shape++] = create_shape_line3(&rt, &rb);
 			map->shapes[cnt_shape++] = create_shape_triangle3(&lb, &rb, &lt);
 			map->shapes[cnt_shape++] = create_shape_triangle3(&lt, &rb, &rt);
 
