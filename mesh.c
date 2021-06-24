@@ -176,6 +176,9 @@ mesh_color_by_bbox2(mesh_t * mesh){
 	vec3_t * curvec;
 	cRGB_t * color;
 	vertex_t * vertex;
+
+	float d_y = ((bbox_max->y - bbox_min->y) * 0.5f);
+
 	for(unsigned int shape = 0; shape < mesh->cntShapes; ++shape){
 		shape_t * curshape = mesh->shapes[shape];
 		vertex_t ** vertices = curshape->vertices;
@@ -184,23 +187,47 @@ mesh_color_by_bbox2(mesh_t * mesh){
 				vertex = vertices[2];
 				curvec = &vertex->vec;
 				color = &vertex->color;
-				color->r = interpolate_lin(curvec->y, bbox_min->y, 0.2f, bbox_max->y, 1.f);
-				color->g = interpolate_lin(curvec->y, bbox_min->y, 0.2f, bbox_max->y, 1.f);
-				color->b = interpolate_lin(curvec->y, bbox_min->y, 0.2f, bbox_max->y, 1.f);
+				color->b = 0.f;
+				if ((curvec->y >= bbox_min->y ) && (curvec->y <= d_y )) {
+					color->r = 1.f;
+					color->g = interpolate_lin(curvec->y, bbox_min->y, 0.f, d_y, 1.f);
+				} else {
+					color->g = 1.f;
+					color->r = interpolate_lin(curvec->y, d_y, 1.f, bbox_max->y, 0.f);
+				}
+				//color->r = interpolate_lin(curvec->y, bbox_min->y, 0.2f, bbox_max->y, 1.f);
+				//color->g = interpolate_lin(curvec->y, bbox_min->y, 0.2f, bbox_max->y, 1.f);
+				//color->b = interpolate_lin(curvec->y, bbox_min->y, 0.2f, bbox_max->y, 1.f);
 			case 2:
 				vertex = vertices[1];
 				curvec = &vertex->vec;
 				color = &vertex->color;
-				color->r = interpolate_lin(curvec->y, bbox_min->y, 0.2f, bbox_max->y, 1.f);
-				color->g = interpolate_lin(curvec->y, bbox_min->y, 0.2f, bbox_max->y, 1.f);
-				color->b = interpolate_lin(curvec->y, bbox_min->y, 0.2f, bbox_max->y, 1.f);
+				color->b = 0.f;
+				if ((curvec->y >= bbox_min->y ) && (curvec->y <= d_y )) {
+					color->r = 1.f;
+					color->g = interpolate_lin(curvec->y, bbox_min->y, 0.f, d_y, 1.f);
+				} else {
+					color->g = 1.f;
+					color->r = interpolate_lin(curvec->y, d_y, 1.f, bbox_max->y, 0.f);
+				}
+				//color->r = interpolate_lin(curvec->y, bbox_min->y, 0.2f, bbox_max->y, 1.f);
+				//color->g = interpolate_lin(curvec->y, bbox_min->y, 0.2f, bbox_max->y, 1.f);
+				//color->b = interpolate_lin(curvec->y, bbox_min->y, 0.2f, bbox_max->y, 1.f);
 			case 1:
 				vertex = vertices[0];
 				curvec = &vertex->vec;
 				color = &vertex->color;
-				color->r = interpolate_lin(curvec->y, bbox_min->y, 0.2f, bbox_max->y, 1.f);
-				color->g = interpolate_lin(curvec->y, bbox_min->y, 0.2f, bbox_max->y, 1.f);
-				color->b = interpolate_lin(curvec->y, bbox_min->y, 0.2f, bbox_max->y, 1.f);
+				color->b = 0.f;
+				if ((curvec->y >= bbox_min->y ) && (curvec->y <= d_y )) {
+					color->r = 1.f;
+					color->g = interpolate_lin(curvec->y, bbox_min->y, 0.f, d_y, 1.f);
+				} else {
+					color->g = 1.f;
+					color->r = interpolate_lin(curvec->y, d_y, 1.f, bbox_max->y, 0.f);
+				}
+				//color->r = interpolate_lin(curvec->y, bbox_min->y, 0.2f, bbox_max->y, 1.f);
+				//color->g = interpolate_lin(curvec->y, bbox_min->y, 0.2f, bbox_max->y, 1.f);
+				//color->b = interpolate_lin(curvec->y, bbox_min->y, 0.2f, bbox_max->y, 1.f);
 				break;
 		}
 	}

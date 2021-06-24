@@ -522,10 +522,23 @@ create_hmap_from_array(float *_array, uint32_t _rows, uint32_t _cols) {
 			vec3_set_values(&rt, cur_col - offset_x, cur_val, cur_row - 1 - offset_z);
 			//printf("rt: r: %i c: %i = %f \n", cur_row-1, cur_col, cur_val);
 
+			float line_y_offset = 0.002f;
+
+			lb.y += line_y_offset;
+			rb.y += line_y_offset;
+			lt.y += line_y_offset;
+			rt.y += line_y_offset;
+
 			map->shapes[cnt_shape++] = create_shape_line3(&lb, &rb);
 			map->shapes[cnt_shape++] = create_shape_line3(&lb, &lt);
 			map->shapes[cnt_shape++] = create_shape_line3(&lt, &rt);
 			map->shapes[cnt_shape++] = create_shape_line3(&rt, &rb);
+
+			lb.y -= line_y_offset;
+			rb.y -= line_y_offset;
+			lt.y -= line_y_offset;
+			rt.y -= line_y_offset;
+
 			map->shapes[cnt_shape++] = create_shape_triangle3(&lb, &rb, &lt);
 			map->shapes[cnt_shape++] = create_shape_triangle3(&lt, &rb, &rt);
 
