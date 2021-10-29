@@ -40,6 +40,50 @@ create_quad3(const vec3_t *lb, const vec3_t *rb, const vec3_t *lt, const vec3_t 
 }
 
 mesh_t * 
+create_polygon_shape(const shape_t * polyshape) {
+	vec3_t *poly_vec3arr = shape_to_vec3ptr(polyshape);
+	mesh_t * poly_mesh = create_polygon3(poly_vec3arr, polyshape->cntVertex);
+	free(poly_vec3arr);
+	return poly_mesh;
+}
+
+mesh_t * 
+create_polygon3(const vec3_t *vecs, size_t cnt_vecs) {
+
+	mesh_t *polygon = NULL;
+
+	if ( cnt_vecs > 3 ) {
+		dl_list_t * triangle_vecs = geometry_triangulate(vecs, cnt_vecs);
+
+		uint32_t rest = (triangle_vecs->cnt % 3);
+
+		uint32_t maxVecsIds = triangle_vecs->cnt - rest;
+
+		uint32_t neededTriangles = ((triangle_vecs->cnt - rest) / 3) ;
+
+		polygon = alloc_mesh(neededTriangles);
+
+		uint32_t curTriangleIdx = 0;
+		uint32_t curVecIdx = 0;
+
+		while ( curVecIdx < maxVecsIds ) {
+			vec3_t *rb = (vec3_t*) dl_list_get(triangle_vecs, curVecIdx++);
+			vec3_t *lb = (vec3_t*) dl_list_get(triangle_vecs, curVecIdx++);
+			vec3_t *lt = (vec3_t*) dl_list_get(triangle_vecs, curVecIdx++);
+			polygon->shapes[curTriangleIdx++] = create_shape_triangle3(lb, rb, lt);
+		}
+
+		#ifdef debug 
+		printf("#vecs: %i REST: %i neededTriangles: %i , created Triangles: %i\n", triangle_vecs->cnt, rest, neededTriangles, curTriangleIdx);
+		#endif
+	}
+
+	return polygon;
+}
+
+
+
+mesh_t * 
 create_cube3_center(const vec3_t *center, const float sidelen){
 	return create_square_block(center, sidelen, sidelen, sidelen, 1, 1, 1);
 }

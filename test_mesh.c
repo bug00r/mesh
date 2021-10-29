@@ -128,9 +128,47 @@ main()
 	mesh_create_bbox(map);
 	mesh_color_by_bbox(map);
 
-	debug_mesh(map);
-
+	#ifdef debug
+		//debug_mesh(map);
+	#endif
+	
 	free_mesh(map);
+
+	//points forming the letter T
+	vec3_t points[8] = { {5.f, .0f, .0f} , { 5.f, 10.f, .0f}, { .0f, 10.f, .0f}  , { .0f, 14.f, .0f}, 
+						  {14.f, 14.f, .0f}, { 14.f, 10.f, .0f}, { 9.f, 10.f, .0f}, { 9.f, .0f, .0f}};
+
+
+	shape_t *polygon_shape = create_shape_polygon3(points, 8);
+
+	mesh_t *polygon = create_polygon3(points, 8);
+	mesh_t *polygon2 = create_polygon_shape(polygon_shape);
+
+	assert(polygon != NULL);
+	assert(polygon2 != NULL);
+
+	#ifdef debug
+		printf("POLYGON 1 shapes: %i\n", polygon->cntShapes);
+		printf("POLYGON 2 shapes: %i\n", polygon2->cntShapes);
+	#endif
+
+	assert(polygon->cntShapes == 5);
+	assert(polygon2->cntShapes == 5);
+
+
+	#ifdef debug
+		printf("POLYGON 1\n\n");
+		debug_mesh(polygon);
+		printf("POLYGON 2\n\n");
+		debug_mesh(polygon2);
+	#endif
+
+	free_shape(polygon_shape);
+	free(polygon_shape);
+
+	free_mesh(polygon);
+	free_mesh(polygon2);
+
 	#ifdef debug
 		printf("End test mesh\n");
 	#endif	

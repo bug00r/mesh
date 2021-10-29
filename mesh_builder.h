@@ -10,7 +10,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <complex.h>
+#include "dl_list.h"
 #include "utils_math.h"
+#include "geometry.h"
 #include "mesh.h"
 
 
@@ -41,6 +43,19 @@ mesh_t * create_triangle3(const vec3_t *p1, const vec3_t *p2, const vec3_t *p3);
 	*/
 #endif
 mesh_t * create_quad3(const vec3_t *lb, const vec3_t *rb, const vec3_t *lt, const vec3_t *rt);
+
+#if 0
+	/**
+		This function triangulates polygon from vec3 point array.
+	*/
+#endif
+mesh_t * create_polygon3(const vec3_t *vecs, size_t cnt_vecs);
+#if 0
+	/**
+		This function triangulates polygon from polygon shape. All shapes with more than 3 vertices were handled
+	*/
+#endif
+mesh_t * create_polygon_shape(const shape_t * polyshape);
 
 #if 0
 	/**

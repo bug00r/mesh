@@ -61,7 +61,7 @@ OBJS=$(BUILDPATH)mesh.o $(BUILDPATH)mesh_tree.o $(BUILDPATH)mesh_builder.o
 
 TESTSRC=test_mesh.c
 TESTBIN=test_mesh.exe
-TESTLIB=-lmesh -lshape -lcolor -lutilsmath -lmat -lvec  
+TESTLIB=-lmesh -lshape -lcolor -lgeometry -lutilsmath -lmat -lvec -ldl_list
 TESTLIBDIR=-L$(BUILDDIR) $(LIB)
 
 all: mkbuilddir $(BUILDPATH)$(LIBNAME) $(BUILDPATH)$(TESTBIN) test
