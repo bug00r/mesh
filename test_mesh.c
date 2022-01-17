@@ -152,8 +152,8 @@ main()
 		printf("POLYGON 2 shapes: %i\n", polygon2->cntShapes);
 	#endif
 
-	assert(polygon->cntShapes == 5);
-	assert(polygon2->cntShapes == 5);
+	assert(polygon->cntShapes == 6);
+	assert(polygon2->cntShapes == 6);
 
 
 	#ifdef debug
