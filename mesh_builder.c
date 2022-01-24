@@ -40,6 +40,29 @@ create_quad3(const vec3_t *lb, const vec3_t *rb, const vec3_t *lt, const vec3_t 
 }
 
 mesh_t * 
+create_quad3_textured(const vec3_t *lb, const vec3_t *rb, const vec3_t *lt, const vec3_t *rt, unsigned int texId)
+{
+	const vec2_t lttex = {0.f, 0.f};
+	const vec2_t lbtex = {0.f, 1.f};
+	const vec2_t rttex = {1.f, 0.f};
+	const vec2_t rbtex = {1.f, 1.f};
+
+	return create_quad3_textured_coords(lb, rb, lt, rt, texId, &lbtex, &rbtex, &lttex, &rttex);
+}
+
+mesh_t * 
+create_quad3_textured_coords(const vec3_t *lb, const vec3_t *rb, const vec3_t *lt, const vec3_t *rt,
+					  unsigned int texId, const vec2_t* lbTex, const vec2_t* rbTex, const vec2_t* ltTex, const vec2_t* rtTex)
+{
+	mesh_t *newtexquad = create_quad3(lb, rb, lt, rt);
+
+	shape_set_texture(newtexquad->shapes[0], (float)texId, lbTex, rbTex, ltTex);
+	shape_set_texture(newtexquad->shapes[1], (float)texId, ltTex, rbTex, rtTex);
+
+	return newtexquad;
+}
+
+mesh_t * 
 create_polygon_shape(const shape_t * polyshape) {
 	vec3_t *poly_vec3arr = shape_to_vec3ptr(polyshape);
 	mesh_t * poly_mesh = create_polygon3(poly_vec3arr, polyshape->cntVertex);

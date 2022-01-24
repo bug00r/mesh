@@ -15,7 +15,6 @@
 #include "geometry.h"
 #include "mesh.h"
 
-
 #if 0
 	/**
 		This function creates a point mesh
@@ -43,6 +42,9 @@ mesh_t * create_triangle3(const vec3_t *p1, const vec3_t *p2, const vec3_t *p3);
 	*/
 #endif
 mesh_t * create_quad3(const vec3_t *lb, const vec3_t *rb, const vec3_t *lt, const vec3_t *rt);
+mesh_t * create_quad3_textured(const vec3_t *lb, const vec3_t *rb, const vec3_t *lt, const vec3_t *rt, unsigned int texId);
+mesh_t * create_quad3_textured_coords(const vec3_t *lb, const vec3_t *rb, const vec3_t *lt, const vec3_t *rt,
+							   unsigned int texId, const vec2_t* lbTex, const vec2_t* rbTex, const vec2_t* ltTex, const vec2_t* rtTex);
 
 #if 0
 	/**
