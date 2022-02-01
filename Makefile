@@ -45,46 +45,42 @@ ifeq ($(M32),1)
 	BIT_SUFFIX+=32
 endif
 
-CFLAGS+=-std=c11 -Wpedantic -pedantic-errors -Wall -Wextra $(debug)
+CFLAGS+=-std=c11 -Wimplicit-fallthrough=0 -Wpedantic -pedantic-errors -Wall -Wextra $(debug)
 #-ggdb
 #-pg for profiling 
 
-LIB?=-L/c/dev/lib$(BIT_SUFFIX)
+LIBSDIR?=-L/c/dev/lib$(BIT_SUFFIX)
 INCLUDE?=-I/c/dev/include -I.
 
 SRC=mesh.c mesh_builder.c mesh_tree.c
 
 INCLUDEDIR=$(INCLUDE) -I.
 
-LIBNAME=libmesh.a
-OBJS=$(BUILDPATH)mesh.o $(BUILDPATH)mesh_tree.o $(BUILDPATH)mesh_builder.o
+NAME=mesh
+LIBNAME=lib$(NAME).a
+LIB=$(BUILDPATH)$(LIBNAME)
+OBJS=$(BUILDPATH)$(NAME).o $(BUILDPATH)mesh_tree.o $(BUILDPATH)mesh_builder.o
 
-TESTSRC=test_mesh.c
-TESTBIN=test_mesh.exe
-TESTLIB=-lmesh -lshape -lcolor -lgeometry -lutilsmath -lmat -lvec -ldl_list
-TESTLIBDIR=-L$(BUILDDIR) $(LIB)
+TESTSRC=test_$(NAME).c
+TESTBIN=$(BUILDPATH)test_$(NAME).exe
+TESTLIB=-l$(NAME) -lshape -lcolor -lgeometry -lutilsmath -lmat -lvec -ldl_list
+TESTLIBDIR=-L$(BUILDDIR) $(LIBSDIR)
 
-all: mkbuilddir $(BUILDPATH)$(LIBNAME) $(BUILDPATH)$(TESTBIN) test
+all: mkbuilddir $(LIB) $(TESTBIN)
 
-$(BUILDPATH)$(LIBNAME): $(OBJS)
-	$(AR) $(ARFLAGS) $(BUILDPATH)$(LIBNAME) $(OBJS)
+$(LIB): $(OBJS)
+	$(AR) $(ARFLAGS) $@ $^
 
-$(BUILDPATH)mesh_builder.o: mesh_builder.c mesh_builder.h
-	$(CC) $(CFLAGS) -c mesh_builder.c -o $(BUILDPATH)mesh_builder.o  $(INCLUDEDIR) 
-
-$(BUILDPATH)mesh_tree.o: mesh_tree.c mesh_tree.h
-	$(CC) $(CFLAGS) -c mesh_tree.c -o $(BUILDPATH)mesh_tree.o  $(INCLUDEDIR)
+$(OBJS):
+	$(CC) $(CFLAGS) -c $(@F:.o=.c) -o $@  $(INCLUDEDIR) 
 	
-$(BUILDPATH)mesh.o: mesh.c mesh.h
-	$(CC) $(CFLAGS) -c mesh.c -o $(BUILDPATH)mesh.o $(INCLUDEDIR)
-	
-$(BUILDPATH)$(TESTBIN):
-	$(CC) $(CFLAGS) $(TESTSRC) -o $(BUILDPATH)$(TESTBIN) $(INCLUDEDIR) $(TESTLIBDIR) $(TESTLIB)
+$(TESTBIN): $(LIB)
+	$(CC) $(CFLAGS) $(@F:.exe=.c) -o $@ $(INCLUDEDIR) $(TESTLIBDIR) $(TESTLIB)
 
 .PHONY: clean mkbuilddir test
 
 test:
-	./$(BUILDPATH)$(TESTBIN)
+	./$(TESTBIN)
 
 mkbuilddir:
 	mkdir -p $(BUILDDIR)
@@ -95,8 +91,8 @@ clean:
 install:
 	mkdir -p $(INSTALL_ROOT)include
 	mkdir -p $(INSTALL_ROOT)lib$(BIT_SUFFIX)
-	cp ./mesh.h $(INSTALL_ROOT)include/mesh.h
-	cp ./mesh_builder.h $(INSTALL_ROOT)include/mesh_builder.h
-	cp ./mesh_tree.h $(INSTALL_ROOT)include/mesh_tree.h
-	cp $(BUILDPATH)$(LIBNAME) $(INSTALL_ROOT)lib$(BIT_SUFFIX)/$(LIBNAME)
+	cp ./$(NAME).h $(INSTALL_ROOT)include$(PATHSEP)$(NAME).h
+	cp ./$(NAME)_builder.h $(INSTALL_ROOT)include$(PATHSEP)$(NAME)_builder.h
+	cp ./$(NAME)_tree.h $(INSTALL_ROOT)include$(PATHSEP)$(NAME)_tree.h
+	cp $(LIB) $(INSTALL_ROOT)lib$(BIT_SUFFIX)$(PATHSEP)$(LIBNAME)
 	

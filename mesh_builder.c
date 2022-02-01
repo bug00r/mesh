@@ -554,7 +554,6 @@ create_hmap_from_array(float *_array, uint32_t _rows, uint32_t _cols) {
 	int32_t rows = (int32_t)(_rows);
 	int32_t cols = (int32_t)(_cols);
 	float *array = _array;
-	float cur_val = 0;
 	vec3_t lb,rb,lt,rt;
 
 	uint32_t cnt_shape = 0;
@@ -567,27 +566,24 @@ create_hmap_from_array(float *_array, uint32_t _rows, uint32_t _cols) {
 	float offset_z = rows*0.5;
 
 	for (int32_t cur_row = rows; --cur_row;) {
-		size_t row_offset = cur_row * cols;
+	
 		for (int32_t cur_col = cols; --cur_col;) {
-			//float cur_val = array[row_offset + cur_col];
-			//printf("r: %i c: %i = %f \n", cur_row, cur_col, cur_val);
 			
 			//lb
 			float cur_val = array[cur_row * cols + ( cur_col-1 )];
 			vec3_set_values(&lb, cur_col - 1 - offset_x , cur_val, cur_row - offset_z );
-			//printf("lb: r: %i c: %i = %f \n", cur_row, cur_col-1, cur_val);
+			
 			//rb
 			cur_val = array[cur_row * cols + cur_col];
 			vec3_set_values(&rb, cur_col - offset_x, cur_val, cur_row - offset_z);
-			//printf("rb: r: %i c: %i = %f \n", cur_row, cur_col, cur_val);
+			
 			//lt
 			cur_val = array[(cur_row - 1) * cols + ( cur_col - 1 )];
 			vec3_set_values(&lt, cur_col - 1 - offset_x, cur_val, cur_row - 1 - offset_z);
-			//printf("lt: r: %i c: %i = %f \n", cur_row-1, cur_col-1, cur_val);
+			
 			//rt
 			cur_val = array[(cur_row - 1) * cols + cur_col];
 			vec3_set_values(&rt, cur_col - offset_x, cur_val, cur_row - 1 - offset_z);
-			//printf("rt: r: %i c: %i = %f \n", cur_row-1, cur_col, cur_val);
 
 			float line_y_offset = 0.002f;
 
@@ -611,7 +607,7 @@ create_hmap_from_array(float *_array, uint32_t _rows, uint32_t _cols) {
 
 		}
 	}
-	//printf("created %i shapes\n", cnt_shape);
+	
 	return map;
 }
 
