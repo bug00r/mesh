@@ -1,60 +1,41 @@
-#MAKE?=mingw32-make
-AR?=ar
 ARFLAGS?=rcs
 PATHSEP?=/
-CC=gcc
 BUILDROOT?=build
-
-ifeq ($(CLANG),1)
-	export CC=clang
-endif
 
 BUILDDIR?=$(BUILDROOT)$(PATHSEP)$(CC)
 BUILDPATH?=$(BUILDDIR)$(PATHSEP)
 
-INSTALL_ROOT?=$(BUILDPATH)
-
-ifeq ($(DEBUG),1)
-	export debug=-ggdb -Ddebug=1
-	export isdebug=1
+ifndef PREFIX
+	INSTALL_ROOT=$(BUILDPATH)
+else
+	INSTALL_ROOT=$(PREFIX)$(PATHSEP)
+	ifeq ($(INSTALL_ROOT),/)
+	INSTALL_ROOT=$(BUILDPATH)
+	endif
 endif
 
-ifeq ($(ANALYSIS),1)
-	export analysis=-Danalysis=1
-	export isanalysis=1
+ifdef DEBUG
+	CFLAGS+=-ggdb
+	ifeq ($(DEBUG),)
+	CFLAGS+=-Ddebug=1
+	else 
+	CFLAGS+=-Ddebug=$(DEBUG)
+	endif
 endif
-
-ifeq ($(DEBUG),2)
-	export debug=-ggdb -Ddebug=2
-	export isdebug=1
-endif
-
-ifeq ($(DEBUG),3)
-	export debug=-ggdb -Ddebug=3
-	export isdebug=1
-endif
-
-ifeq ($(OUTPUT),1)
-	export outimg= -Doutput=1
-endif
-
-BIT_SUFFIX=
 
 ifeq ($(M32),1)
 	CFLAGS+=-m32
 	BIT_SUFFIX+=32
 endif
 
-CFLAGS+=-std=c11 -Wimplicit-fallthrough=0 -Wpedantic -pedantic-errors -Wall -Wextra $(debug)
+CFLAGS+=-std=c11 -Wpedantic -pedantic-errors -Wall -Wextra
 #-ggdb
 #-pg for profiling 
 
-LIBSDIR?=-L/c/dev/lib$(BIT_SUFFIX)
-INCLUDE?=-I/c/dev/include -I.
+LDFLAGS+=-L/c/dev/lib$(BIT_SUFFIX)
+CFLAGS+=-I/c/dev/include -I.
 
 SRC=mesh.c mesh_builder.c mesh_tree.c
-
-INCLUDEDIR=$(INCLUDE) -I.
 
 NAME=mesh
 LIBNAME=lib$(NAME).a
@@ -66,20 +47,22 @@ TESTBIN=$(BUILDPATH)test_$(NAME).exe
 TESTLIB=-l$(NAME) -lshape -lcolor -lgeometry -lutilsmath -lmat -lvec -ldl_list
 TESTLIBDIR=-L$(BUILDDIR) $(LIBSDIR)
 
-all: mkbuilddir $(LIB) $(TESTBIN)
+LDFLAGS+=$(TESTLIBDIR) $(TESTLIB)
+
+all: mkbuilddir $(LIB)
 
 $(LIB): $(OBJS)
 	$(AR) $(ARFLAGS) $@ $^
 
 $(OBJS):
-	$(CC) $(CFLAGS) -c $(@F:.o=.c) -o $@  $(INCLUDEDIR) 
+	$(CC) $(CFLAGS) -c $(@F:.o=.c) -o $@
 	
 $(TESTBIN): $(LIB)
-	$(CC) $(CFLAGS) $(@F:.exe=.c) -o $@ $(INCLUDEDIR) $(TESTLIBDIR) $(TESTLIB)
+	$(CC) $(CFLAGS) $(@F:.exe=.c) -o $@ $(LDFLAGS)
 
 .PHONY: clean mkbuilddir test
 
-test:
+test: mkbuilddir $(TESTBIN)
 	./$(TESTBIN)
 
 mkbuilddir:
