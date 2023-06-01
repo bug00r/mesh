@@ -33,12 +33,12 @@ ifeq ($(M32),1)
 	BIT_SUFFIX+=32
 endif
 
-CFLAGS+=-std=c11 -Wpedantic -pedantic-errors -Wall -Wextra
+override CFLAGS+=-std=c11 -Wpedantic -pedantic-errors -Wall -Wextra
 #-ggdb
 #-pg for profiling 
 
-LDFLAGS+=-L/c/dev/lib$(BIT_SUFFIX)
-CFLAGS+=-I/c/dev/include -I.
+override LDFLAGS+=-L/c/dev/lib$(BIT_SUFFIX)
+override CFLAGS+=-I/c/dev/include -I.
 
 SRC=mesh.c mesh_builder.c mesh_tree.c
 
@@ -52,7 +52,7 @@ TESTBIN=$(BUILDPATH)test_$(NAME).exe
 TESTLIB=-l$(NAME) -lshape -lcolor -lgeometry -lutilsmath -lmat -lvec -ldl_list
 TESTLIBDIR=-L$(BUILDDIR) $(LIBSDIR)
 
-LDFLAGS+=$(TESTLIBDIR) $(TESTLIB)
+override LDFLAGS+=$(TESTLIBDIR) $(TESTLIB)
 
 all: mkbuilddir $(LIB)
 
