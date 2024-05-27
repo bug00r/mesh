@@ -1,33 +1,33 @@
 #include "mesh_builder.h"
 /**
-shape_t * create_shape_point3(vec3_t *p1);
-shape_t * create_shape_line3(vec3_t *p1, vec3_t *p2);
-shape_t * create_shape_triangle3(vec3_t *p1, vec3_t *p2, vec3_t *p3);
+Shape * create_shape_point3(Vec3 *p1);
+Shape * create_shape_line3(Vec3 *p1, Vec3 *p2);
+Shape * create_shape_triangle3(Vec3 *p1, Vec3 *p2, Vec3 *p3);
 */
-mesh_t *
-create_point3(const vec3_t *p){
-	mesh_t * point = alloc_mesh(1);
+Mesh *
+create_point3(const Vec3 *p){
+	Mesh * point = alloc_mesh(1);
 	point->shapes[0] = create_shape_point3(p);
 	return point;
 }
 
-mesh_t * 
-create_line3(const vec3_t *p1, const vec3_t *p2){
-	mesh_t * line = alloc_mesh(1);
+Mesh * 
+create_line3(const Vec3 *p1, const Vec3 *p2){
+	Mesh * line = alloc_mesh(1);
 	line->shapes[0] = create_shape_line3(p1, p2);
 	return line;
 }
 
-mesh_t * 
-create_triangle3(const vec3_t *p1, const vec3_t *p2, const vec3_t *p3){
-	mesh_t * triangle = alloc_mesh(1);
+Mesh * 
+create_triangle3(const Vec3 *p1, const Vec3 *p2, const Vec3 *p3){
+	Mesh * triangle = alloc_mesh(1);
 	triangle->shapes[0] = create_shape_triangle3(p1, p2, p3);
 	return triangle;
 }
 
-mesh_t * 
-create_quad3(const vec3_t *lb, const vec3_t *rb, const vec3_t *lt, const vec3_t *rt){
-	mesh_t * quad = alloc_mesh(2);
+Mesh * 
+create_quad3(const Vec3 *lb, const Vec3 *rb, const Vec3 *lt, const Vec3 *rt){
+	Mesh * quad = alloc_mesh(2);
 	
 	quad->shapes[0] = create_shape_triangle3(lb, rb, lt);
 	quad->shapes[1] = create_shape_triangle3(lt, rb, rt);
@@ -39,22 +39,22 @@ create_quad3(const vec3_t *lb, const vec3_t *rb, const vec3_t *lt, const vec3_t 
 	return quad;
 }
 
-mesh_t * 
-create_quad3_textured(const vec3_t *lb, const vec3_t *rb, const vec3_t *lt, const vec3_t *rt, unsigned int texId)
+Mesh * 
+create_quad3_textured(const Vec3 *lb, const Vec3 *rb, const Vec3 *lt, const Vec3 *rt, unsigned int texId)
 {
-	const vec2_t lttex = {0.f, 0.f};
-	const vec2_t lbtex = {0.f, 1.f};
-	const vec2_t rttex = {1.f, 0.f};
-	const vec2_t rbtex = {1.f, 1.f};
+	const Vec2 lttex = {0.f, 0.f};
+	const Vec2 lbtex = {0.f, 1.f};
+	const Vec2 rttex = {1.f, 0.f};
+	const Vec2 rbtex = {1.f, 1.f};
 
 	return create_quad3_textured_coords(lb, rb, lt, rt, texId, &lbtex, &rbtex, &lttex, &rttex);
 }
 
-mesh_t * 
-create_quad3_textured_coords(const vec3_t *lb, const vec3_t *rb, const vec3_t *lt, const vec3_t *rt,
-					  unsigned int texId, const vec2_t* lbTex, const vec2_t* rbTex, const vec2_t* ltTex, const vec2_t* rtTex)
+Mesh * 
+create_quad3_textured_coords(const Vec3 *lb, const Vec3 *rb, const Vec3 *lt, const Vec3 *rt,
+					  unsigned int texId, const Vec2* lbTex, const Vec2* rbTex, const Vec2* ltTex, const Vec2* rtTex)
 {
-	mesh_t *newtexquad = create_quad3(lb, rb, lt, rt);
+	Mesh *newtexquad = create_quad3(lb, rb, lt, rt);
 
 	shape_set_texture(newtexquad->shapes[0], (float)texId, lbTex, rbTex, ltTex);
 	shape_set_texture(newtexquad->shapes[1], (float)texId, ltTex, rbTex, rtTex);
@@ -62,21 +62,21 @@ create_quad3_textured_coords(const vec3_t *lb, const vec3_t *rb, const vec3_t *l
 	return newtexquad;
 }
 
-mesh_t * 
-create_polygon_shape(const shape_t * polyshape) {
-	vec3_t *poly_vec3arr = shape_to_vec3ptr(polyshape);
-	mesh_t * poly_mesh = create_polygon3(poly_vec3arr, polyshape->cntVertex);
+Mesh * 
+create_polygon_shape(const Shape * polyshape) {
+	Vec3 *poly_vec3arr = shape_to_vec3ptr(polyshape);
+	Mesh * poly_mesh = create_polygon3(poly_vec3arr, polyshape->cntVertex);
 	free(poly_vec3arr);
 	return poly_mesh;
 }
 
-mesh_t * 
-create_polygon3(const vec3_t *vecs, size_t cnt_vecs) {
+Mesh * 
+create_polygon3(const Vec3 *vecs, size_t cnt_vecs) {
 
-	mesh_t *polygon = NULL;
+	Mesh *polygon = NULL;
 
 	if ( cnt_vecs > 3 ) {
-		dl_list_t * triangle_vecs = geometry_triangulate(vecs, cnt_vecs);
+		DlList * triangle_vecs = geometry_triangulate(vecs, cnt_vecs);
 
 		uint32_t rest = (triangle_vecs->cnt % 3);
 
@@ -90,9 +90,9 @@ create_polygon3(const vec3_t *vecs, size_t cnt_vecs) {
 		uint32_t curVecIdx = 0;
 
 		while ( curVecIdx < maxVecsIds ) {
-			vec3_t *rb = (vec3_t*) dl_list_get(triangle_vecs, curVecIdx++);
-			vec3_t *lb = (vec3_t*) dl_list_get(triangle_vecs, curVecIdx++);
-			vec3_t *lt = (vec3_t*) dl_list_get(triangle_vecs, curVecIdx++);
+			Vec3 *rb = (Vec3*) dl_list_get(triangle_vecs, curVecIdx++);
+			Vec3 *lb = (Vec3*) dl_list_get(triangle_vecs, curVecIdx++);
+			Vec3 *lt = (Vec3*) dl_list_get(triangle_vecs, curVecIdx++);
 			polygon->shapes[curTriangleIdx++] = create_shape_triangle3(lb, rb, lt);
 		}
 
@@ -106,17 +106,17 @@ create_polygon3(const vec3_t *vecs, size_t cnt_vecs) {
 
 
 
-mesh_t * 
-create_cube3_center(const vec3_t *center, const float sidelen){
+Mesh * 
+create_cube3_center(const Vec3 *center, const float sidelen){
 	return create_square_block(center, sidelen, sidelen, sidelen, 1, 1, 1);
 }
 
-mesh_t * create_square_block(const vec3_t *center, const float width, const float height, const float depth,
+Mesh * create_square_block(const Vec3 *center, const float width, const float height, const float depth,
 							const unsigned int cntx, const unsigned int cnty, const unsigned int cntz){
 	unsigned int needshapes = (cntx * cnty * 4);
 	needshapes += ( cntz * cnty * 4 ); 
 	needshapes += ( cntz * cntx * 4 );
-	mesh_t * square_block = alloc_mesh(needshapes);
+	Mesh * square_block = alloc_mesh(needshapes);
 	const float hw = width  * 0.5f;
 	const float hh = height * 0.5f;
 	const float hd = depth  * 0.5f;
@@ -126,7 +126,7 @@ mesh_t * create_square_block(const vec3_t *center, const float width, const floa
 	unsigned int curx = 0;
 	unsigned int cury = 0;
 	unsigned int curz = 0;
-	vec3_t p1,p2,p3,p4,start;
+	Vec3 p1,p2,p3,p4,start;
 	unsigned int curShape = 0;
 	//every side segment could be mirrored front to back, left to right, top to bottom
 	//front + back
@@ -218,26 +218,26 @@ mesh_t * create_square_block(const vec3_t *center, const float width, const floa
 	return square_block;
 }
 
-mesh_t * 
+Mesh * 
 create_raster(const float linelen){
 	int lines = 10;
 	const float linestep = 0.5f;
-	mesh_t * raster = alloc_mesh(42);
-	const cRGB_t linecolor = {.5f, 0.5f, 0.5f};
-	vec3_t startvec, endvec;
+	Mesh * raster = alloc_mesh(42);
+	const ColorRGB linecolor = {.5f, 0.5f, 0.5f};
+	Vec3 startvec, endvec;
 	
 	int curshape = 0;
 	for(int x = -lines; x <= lines; ++x ) {
-		startvec = (vec3_t){ linestep*x , 0.f, -linelen };
-		endvec = (vec3_t){ linestep*x , 0.f, linelen };
+		startvec = (Vec3){ linestep*x , 0.f, -linelen };
+		endvec = (Vec3){ linestep*x , 0.f, linelen };
 		raster->shapes[curshape] = create_shape_line3(&startvec, &endvec);
 		set_shape_color(raster->shapes[curshape], &linecolor);
 		curshape++;
 	}
 	
 	for(int z = -lines; z <= lines; ++z ) {
-		startvec = (vec3_t){ -linelen  , 0.f, linestep*z};
-		endvec = (vec3_t){ linelen , 0.f,  linestep*z};
+		startvec = (Vec3){ -linelen  , 0.f, linestep*z};
+		endvec = (Vec3){ linelen , 0.f,  linestep*z};
 		raster->shapes[curshape] = create_shape_line3(&startvec, &endvec);
 		set_shape_color(raster->shapes[curshape], &linecolor);
 		curshape++;
@@ -246,18 +246,18 @@ create_raster(const float linelen){
 	return raster;
 }
 
-mesh_t * 
+Mesh * 
 create_point_raster(){
 	const float pdiff = 0.08f;
 	const int start = 10;
 	const int startx = 10;
-	mesh_t * raster = alloc_mesh(((2*startx)+1)*((2*startx)+1)*((2*start)+1));
+	Mesh * raster = alloc_mesh(((2*startx)+1)*((2*startx)+1)*((2*start)+1));
 	int curshape = 0;
-	vec3_t curvec;
+	Vec3 curvec;
 	for( int x = -startx; x <= startx ;++x ){
 		for( int y = -start; y <= start ;++y ){
 			for( int z = -startx; z <= startx ;++z ){
-				curvec = (vec3_t){x*pdiff, y*pdiff, z*pdiff};
+				curvec = (Vec3){x*pdiff, y*pdiff, z*pdiff};
 				raster->shapes[curshape] = create_shape_point3(&curvec);
 				++curshape;
 			}
@@ -266,28 +266,28 @@ create_point_raster(){
 	return raster;
 }
 
-mesh_t * 
+Mesh * 
 createsphere(const float radius, const unsigned int longs, const unsigned int lats){
 	const float degreelong = 180.f / longs;
     const float degreelats = 360.f / lats;
 	float curlongdeg = 90.f;
 	float curlatdeg = 0.f;
-	const vec3_t startvec = {radius, 0, 0};
-    mesh_t * sphere = alloc_mesh(longs * lats * 2);
+	const Vec3 startvec = {radius, 0, 0};
+    Mesh * sphere = alloc_mesh(longs * lats * 2);
 	int curShape = 0;
 	
-	vec3_t p1, p2, p3, p4;
+	Vec3 p1, p2, p3, p4;
 	float nextlongdegree, nextlatdegree;
 	const float longcolorstep = 1.f / longs;
 	
 	unsigned int curlong = 0;
 	
-	cRGB_t color = { 0.f, 0.f, 0.f };
-	mat3_t z_rot_matrix;
-	mat3_t z_rot_matrix_2;
-	mat3_t y_rot_matrix;
-	mat3_t y_rot_matrix_2;
-	mat3_t rotmat;
+	ColorRGB color = { 0.f, 0.f, 0.f };
+	Mat3 z_rot_matrix;
+	Mat3 z_rot_matrix_2;
+	Mat3 y_rot_matrix;
+	Mat3 y_rot_matrix_2;
+	Mat3 rotmat;
 	do {
 		nextlongdegree = curlongdeg - degreelong;
 
@@ -331,25 +331,25 @@ createsphere(const float radius, const unsigned int longs, const unsigned int la
 	return sphere;
 }
 
-mesh_t * 
+Mesh * 
 createcylinder(const float radius, const float height, const unsigned int longs, const unsigned int lats, 
 			   const bool showtop, const bool showbottom) {
 	unsigned int needshapes = (longs * lats * 2);
 	if (showtop) { needshapes+=lats; }
 	if (showbottom) { needshapes+=lats; }
-	mesh_t * cylinder = alloc_mesh(needshapes);
+	Mesh * cylinder = alloc_mesh(needshapes);
 	const float degreelats = 360.f / lats;
 	const float heightseg = height / longs;
-	const vec3_t startvec = {radius, 0.f, 0.f};
-	const vec3_t centerbottom = {0.f, 0.f, 0.f};
-	const vec3_t centertop = {0.f, height, 0.f};
+	const Vec3 startvec = {radius, 0.f, 0.f};
+	const Vec3 centerbottom = {0.f, 0.f, 0.f};
+	const Vec3 centertop = {0.f, height, 0.f};
 	unsigned int curlat = 0;
 	unsigned int curShape = 0;
 	float curdegreelats = 0.f;
-	vec3_t p1, p2, p3, p4, curvec, curvecnext;
+	Vec3 p1, p2, p3, p4, curvec, curvecnext;
 	
-	mat3_t y_rot_matrix;
-	mat3_t y_rot_matrix_2;
+	Mat3 y_rot_matrix;
+	Mat3 y_rot_matrix_2;
 	do {
 		unsigned int curlong = 0;
 		float curheight = 0.f;
@@ -399,20 +399,20 @@ createcylinder(const float radius, const float height, const unsigned int longs,
 	return cylinder;
 }
 
-mesh_t * 
+Mesh * 
 createcone(const float radius, const float height, const unsigned int lats, const bool showbottom){
 	unsigned int needshapes = lats;
 	if (showbottom) { needshapes+=lats; }
-	mesh_t * cone = alloc_mesh(needshapes);
+	Mesh * cone = alloc_mesh(needshapes);
 	const float degreelats = 360.f / lats;
-	const vec3_t startvec = {radius, 0.f, 0.f};
-	const vec3_t centerbottom = {0.f, 0.f, 0.f};
-	const vec3_t centertop = {0.f, height, 0.f};
+	const Vec3 startvec = {radius, 0.f, 0.f};
+	const Vec3 centerbottom = {0.f, 0.f, 0.f};
+	const Vec3 centertop = {0.f, height, 0.f};
 	unsigned int curlat = 0;
 	unsigned int curShape = 0;
 	float curdegreelats = 0.f;
-	vec3_t p1, p2, curvec;
-	mat3_t rot_matrix;
+	Vec3 p1, p2, curvec;
+	Mat3 rot_matrix;
 
 	do {		
 		//+++++++++++
@@ -440,15 +440,15 @@ createcone(const float radius, const float height, const unsigned int lats, cons
 	return cone;
 }
 
-mesh_t * 
+Mesh * 
 createpath(const float radius, const int cntelements, const float height, const int longs, const float scaleend) {
 	int ang_max_x = 32; 
 	int ang_max_y = 31; 
 	int ang_max_z = 30;
 	
-    vec3_t zerovec = {0.f, 0.f, 0.f};
-    vec3_t startvec = zerovec;
-    vec3_t startvecring = {radius, 0.f, 0.f};
+    Vec3 zerovec = {0.f, 0.f, 0.f};
+    Vec3 startvec = zerovec;
+    Vec3 startvecring = {radius, 0.f, 0.f};
     int curelement = 0;
     float heightseg = height/cntelements;
 	
@@ -456,16 +456,16 @@ createpath(const float radius, const int cntelements, const float height, const 
     float curscaling = 1.0;
 	float scalestep = (curscaling - scaleend) / cntelements;
 	
-	mesh_t * path = alloc_mesh(cntelements * longs * 2);
+	Mesh * path = alloc_mesh(cntelements * longs * 2);
 
-	mat3_t * roty;
-	mat3_t * rotz;
-	mat3_t * rotmat;
+	Mat3 * roty;
+	Mat3 * rotz;
+	Mat3 * rotmat;
 	
-	vec3_t *p1;
-	vec3_t *p2;
-	vec3_t *p3;
-	vec3_t *p4;
+	Vec3 *p1;
+	Vec3 *p2;
+	Vec3 *p3;
+	Vec3 *p4;
 	
 	int curShape = 0;
 	float degreelong = 360.f / longs;
@@ -479,29 +479,29 @@ createpath(const float radius, const int cntelements, const float height, const 
 		mat3_mul(rotmat, rotz);
 
 		//rotate base vec
-		vec3_t basevec = {0.f, heightseg, 0.f};
+		Vec3 basevec = {0.f, heightseg, 0.f};
 		mat_vec_mul_3(rotmat, &basevec);
 		
 		free(roty);
 		free(rotz);
 		free(rotmat);
 		
-        vec3_t endvec;
+        Vec3 endvec;
 		vec3_add_dest(&endvec, &startvec, &basevec);
 
         startvec = endvec;
 
         //calc ring
 		
-        vec3_t curvec = startvecring;
+        Vec3 curvec = startvecring;
         int curlong = 0;
         float curlongdeg = 0.f;
 
-        vec3_t scalevec = {curscaling, 1.0, curscaling};
+        Vec3 scalevec = {curscaling, 1.0, curscaling};
 
         while ((curlongdeg + degreelong) <= 360.f) {
-            mat3_t * y_rot_matrix = create_rot_y_mat(curlongdeg);
-            mat3_t * y_rot_matrix_2 = create_rot_y_mat(curlongdeg + degreelong);
+            Mat3 * y_rot_matrix = create_rot_y_mat(curlongdeg);
+            Mat3 * y_rot_matrix_2 = create_rot_y_mat(curlongdeg + degreelong);
 			
 			#if 0
 				//P1 und P2 sind die p3 und p4 des vorgänger rings. wenn nich vorhanden dann neu berechnen(erster ring)
@@ -549,17 +549,17 @@ createpath(const float radius, const int cntelements, const float height, const 
 	return path;
 }
 
-mesh_t * 
+Mesh * 
 create_hmap_from_array(float *_array, uint32_t _rows, uint32_t _cols) {
 	int32_t rows = (int32_t)(_rows);
 	int32_t cols = (int32_t)(_cols);
 	float *array = _array;
-	vec3_t lb,rb,lt,rt;
+	Vec3 lb,rb,lt,rt;
 
 	uint32_t cnt_shape = 0;
 	uint32_t cntMesh = ((rows-1)*(cols-1))*6;
 
-	mesh_t * map = alloc_mesh(cntMesh);
+	Mesh * map = alloc_mesh(cntMesh);
 
 	//offset for calculation around the center of 0/0/0
 	float offset_x = cols*0.5;
@@ -611,13 +611,13 @@ create_hmap_from_array(float *_array, uint32_t _rows, uint32_t _cols) {
 	return map;
 }
 
-mesh_t * 
+Mesh * 
 create_center(){
-	mesh_t * center = alloc_mesh(3);
-	const cRGB_t col_x = {0.f, 0.f, 1.f};
-	const cRGB_t col_z = {1.f, 0.f, 0.f};
-	const cRGB_t col_y = {0.f, 1.f, 0.f};
-	vec3_t startvec, endvec;
+	Mesh * center = alloc_mesh(3);
+	const ColorRGB col_x = {0.f, 0.f, 1.f};
+	const ColorRGB col_z = {1.f, 0.f, 0.f};
+	const ColorRGB col_y = {0.f, 1.f, 0.f};
+	Vec3 startvec, endvec;
 	
 	vec3_set_values(&startvec, 1.f, 0.f, 0.f);
 	vec3_set_values(&endvec, -1.f, 0.f, 0.f);

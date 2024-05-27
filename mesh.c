@@ -1,12 +1,12 @@
 #include "mesh.h"
 #include <stdio.h>
 
-const size_t mesh_size = sizeof(mesh_t);
-const size_t mesh_ptr_size = sizeof(mesh_t*);
+const size_t mesh_size = sizeof(Mesh);
+const size_t mesh_ptr_size = sizeof(Mesh*);
 
-mesh_t * 
+Mesh * 
 alloc_mesh(const unsigned int meshcount){
-	mesh_t * newmesh = malloc(mesh_size);
+	Mesh * newmesh = malloc(mesh_size);
 	newmesh->shapes = malloc(meshcount * shape_ptr_size);
 	newmesh->cntShapes = meshcount;
 	for(unsigned int shape = 0; shape < newmesh->cntShapes; ++shape){
@@ -17,9 +17,9 @@ alloc_mesh(const unsigned int meshcount){
 }
 
 void 
-free_mesh(mesh_t *mesh){
+free_mesh(Mesh *mesh){
 	for(unsigned int shape = 0; shape < mesh->cntShapes; ++shape){
-		shape_t * curshape = mesh->shapes[shape]; 
+		Shape * curshape = mesh->shapes[shape]; 
 		if (curshape != NULL){
 			free_shape(curshape);
 			free(curshape);
@@ -30,34 +30,34 @@ free_mesh(mesh_t *mesh){
 }
 
 void 
-mat_mul_mesh(mesh_t * mesh, const mat3_t * matrix){
-	mesh_t * cmesh = mesh;
-	shape_t ** shapes = cmesh->shapes;
+mat_mul_mesh(Mesh * mesh, const Mat3 * matrix){
+	Mesh * cmesh = mesh;
+	Shape ** shapes = cmesh->shapes;
 	for(unsigned int shape = cmesh->cntShapes; shape-- ;){
 		mat_mul_shape(shapes[shape], matrix); 
 	}
 }
 
 void 
-scale_mesh(mesh_t * mesh, const float scalex, const float scaley, const float scalez ){
-	mesh_t * cmesh = mesh;
-	shape_t ** shapes = cmesh->shapes;
+scale_mesh(Mesh * mesh, const float scalex, const float scaley, const float scalez ){
+	Mesh * cmesh = mesh;
+	Shape ** shapes = cmesh->shapes;
 	for(unsigned int shape = cmesh->cntShapes; shape-- ;){
 		scale_shape(shapes[shape], scalex, scaley, scalez); 
 	}
 }
 
 void 
-translate_mesh(mesh_t * mesh, const float tx, const float ty, const float tz ){
-	mesh_t * cmesh = mesh;
-	shape_t ** shapes = cmesh->shapes;
+translate_mesh(Mesh * mesh, const float tx, const float ty, const float tz ){
+	Mesh * cmesh = mesh;
+	Shape ** shapes = cmesh->shapes;
 	for(unsigned int shape = cmesh->cntShapes; shape-- ;){
 		translate_shape(shapes[shape], tx, ty, tz); 
 	}
 }
 
 void 
-debug_mesh(const mesh_t * mesh){
+debug_mesh(const Mesh * mesh){
 	printf("cnt shapes: %i\n shape informations:\n", mesh->cntShapes);
 	for(unsigned int shape = 0; shape < mesh->cntShapes; ++shape){
 		debug_shape(mesh->shapes[shape]);
@@ -68,13 +68,13 @@ debug_mesh(const mesh_t * mesh){
 }
 
 void 
-mesh_unset_bbox(mesh_t *mesh){
+mesh_unset_bbox(Mesh *mesh){
 	vec3_set_values(&mesh->bbox.min, FLT_MAX, FLT_MAX, FLT_MAX);
 	vec3_set_values(&mesh->bbox.max, FLT_MIN, FLT_MIN, FLT_MIN);
 	mesh->bbox.created = false;
 }
 
-void mesh_set_bbox(mesh_t *mesh, const float minx, const float miny, 
+void mesh_set_bbox(Mesh *mesh, const float minx, const float miny, 
 								 const float minz, const float maxx, 
 								 const float maxy, const float maxz){
 	vec3_set_values(&mesh->bbox.min, minx, miny, minz);
@@ -83,13 +83,13 @@ void mesh_set_bbox(mesh_t *mesh, const float minx, const float miny,
 }
 
 void 
-mesh_create_bbox(mesh_t * mesh){
-	vec3_t * bbox_min = &mesh->bbox.min;
-	vec3_t * bbox_max = &mesh->bbox.max;
-	vec3_t * curvec;
+mesh_create_bbox(Mesh * mesh){
+	Vec3 * bbox_min = &mesh->bbox.min;
+	Vec3 * bbox_max = &mesh->bbox.max;
+	Vec3 * curvec;
 	for(unsigned int shape = mesh->cntShapes; shape-- ;){
-		shape_t * curshape = mesh->shapes[shape];
-		vertex_t ** vertices = curshape->vertices;
+		Shape * curshape = mesh->shapes[shape];
+		Vertex ** vertices = curshape->vertices;
 		switch(curshape->cntVertex) {
 			case 3:
 				curvec = &vertices[2]->vec;
@@ -122,26 +122,26 @@ mesh_create_bbox(mesh_t * mesh){
 }
 
 void 
-mesh_set_color (mesh_t * _mesh, cRGB_t * _color){
-	cRGB_t * color = _color;
-	mesh_t * mesh = _mesh;
+mesh_set_color (Mesh * _mesh, ColorRGB * _color){
+	ColorRGB * color = _color;
+	Mesh * mesh = _mesh;
 
 	for(unsigned int shape = 0; shape < mesh->cntShapes; ++shape){
-		shape_t * curshape = mesh->shapes[shape];
+		Shape * curshape = mesh->shapes[shape];
 		set_shape_color(curshape, color);
 	}
 }
 
 void 
-mesh_color_by_bbox(mesh_t * mesh){
-	vec3_t * bbox_min = &mesh->bbox.min;
-	vec3_t * bbox_max = &mesh->bbox.max;
-	vec3_t * curvec;
-	cRGB_t * color;
-	vertex_t * vertex;
+mesh_color_by_bbox(Mesh * mesh){
+	Vec3 * bbox_min = &mesh->bbox.min;
+	Vec3 * bbox_max = &mesh->bbox.max;
+	Vec3 * curvec;
+	ColorRGB * color;
+	Vertex * vertex;
 	for(unsigned int shape = 0; shape < mesh->cntShapes; ++shape){
-		shape_t * curshape = mesh->shapes[shape];
-		vertex_t ** vertices = curshape->vertices;
+		Shape * curshape = mesh->shapes[shape];
+		Vertex ** vertices = curshape->vertices;
 		switch(curshape->cntVertex) {
 			case 3:
 				vertex = vertices[2];
@@ -170,18 +170,18 @@ mesh_color_by_bbox(mesh_t * mesh){
 }
 
 void 
-mesh_color_by_bbox2(mesh_t * mesh){
-	vec3_t * bbox_min = &mesh->bbox.min;
-	vec3_t * bbox_max = &mesh->bbox.max;
-	vec3_t * curvec;
-	cRGB_t * color;
-	vertex_t * vertex;
+mesh_color_by_bbox2(Mesh * mesh){
+	Vec3 * bbox_min = &mesh->bbox.min;
+	Vec3 * bbox_max = &mesh->bbox.max;
+	Vec3 * curvec;
+	ColorRGB * color;
+	Vertex * vertex;
 
 	float d_y = ((bbox_max->y - bbox_min->y) * 0.5f);
 
 	for(unsigned int shape = 0; shape < mesh->cntShapes; ++shape){
-		shape_t * curshape = mesh->shapes[shape];
-		vertex_t ** vertices = curshape->vertices;
+		Shape * curshape = mesh->shapes[shape];
+		Vertex ** vertices = curshape->vertices;
 		switch(curshape->cntVertex) {
 			case 3:
 				vertex = vertices[2];
