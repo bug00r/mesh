@@ -38,7 +38,7 @@ override CFLAGS+=-std=c11 -Wpedantic -pedantic-errors -Wall -Wextra
 #-pg for profiling 
 
 override LDFLAGS+=-L/c/dev/lib$(BIT_SUFFIX)
-override CFLAGS+=-I/c/dev/include -I.
+override CFLAGS+=-I. -I/c/dev/include
 
 SRC=mesh.c mesh_builder.c mesh_tree.c
 
